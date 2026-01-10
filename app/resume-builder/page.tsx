@@ -1,5 +1,9 @@
 'use client';
 
+// Force dynamic rendering to prevent SSR/prerendering issues with PDF libraries
+export const dynamic = 'force-dynamic';
+
+
 import { Provider } from 'react-redux';
 import { store } from '@/lib/redux/store';
 import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks';
@@ -22,14 +26,14 @@ import {
     deleteCertification
 } from '@/lib/redux/resumeSlice';
 import { WorkExperience, Education, Skill, Project, Certification } from '@/types/resume';
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { Menu, X, Plus, Trash2, GripVertical, AlertTriangle, Loader2, Github, Upload } from 'lucide-react';
 import { parseResumeFromPdf } from '@/lib/parse-resume';
 import { useRef } from 'react';
 
 // Dynamically import PDF components (client-side only)
-const ResumePreview = dynamic(
+const ResumePreview = dynamicImport(
     () => import('@/components/resume/ResumePreview'),
     { ssr: false }
 );
