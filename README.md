@@ -2,6 +2,10 @@
 
 A free, private, and open-source resume builder built with Next.js.
 
+**🚀 [Live Demo](https://quickmyresume.vercel.app/)**
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/GauravSingh0001/MyResume)
+
 ## Features
 
 - **Real-time Preview:** See changes instantly as you type.
