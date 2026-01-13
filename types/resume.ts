@@ -6,6 +6,7 @@ export interface Resume {
     skills: Skill[];
     projects: Project[];
     certifications: Certification[];
+    customSections?: CustomSection[];
 }
 
 export interface Basics {
@@ -20,8 +21,24 @@ export interface Basics {
 
 export interface CustomField {
     id: string;
-    name: string; // e.g. "GitHub", "Portfolio"
+    name: string; // e.g. "GitHub", "Portfolio", "LinkedIn"
     value: string; // e.g. "github.com/johndoe"
+    icon?: 'github' | 'linkedin' | 'portfolio' | 'website' | 'twitter' | 'email' | 'phone' | 'other'; // Icon type for display
+}
+
+export interface CustomSection {
+    id: string;
+    title: string; // e.g. "Publications", "Awards", "Languages"
+    items: CustomSectionItem[];
+}
+
+export interface CustomSectionItem {
+    id: string;
+    title: string;
+    subtitle?: string;
+    date?: string;
+    description?: string;
+    details?: string[]; // Array of bullet points or details
 }
 
 export interface WorkExperience {
@@ -186,6 +203,7 @@ export const initialResume: Resume = {
             issuer: 'Meta',
         },
     ],
+    customSections: [],
 };
 
 export const initialSettings: ResumeSettings = {

@@ -15,6 +15,7 @@ export const ResumePreview = ({ resume }: ResumePreviewProps) => {
     const [pdfUrl, setPdfUrl] = useState<string>('');
     const [previousPdfUrl, setPreviousPdfUrl] = useState<string>('');
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -32,7 +33,43 @@ export const ResumePreview = ({ resume }: ResumePreviewProps) => {
         }
     };
 
-    // Generate PDF blob URL whenever resume changes
+    // Handle PDF download via API route (server-side generation for Vercel compatibility)
+    const handleDownload = async () => {
+        setIsDownloading(true);
+        try {
+            const response = await fetch('/api/generate-pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(resume),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate PDF');
+            }
+
+            // Get the PDF blob from response
+            const blob = await response.blob();
+
+            // Create download link
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${resume.basics.name.replace(/\s+/g, '_')}_Resume.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            alert('Failed to download PDF. Please try again.');
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    // Generate PDF blob URL whenever resume changes (for preview only)
     useEffect(() => {
         // Debounce PDF generation to avoid too many updates
         if (timeoutRef.current) {
@@ -144,15 +181,24 @@ export const ResumePreview = ({ resume }: ResumePreviewProps) => {
                         </button>
                     </div>
 
-                    {/* Download Button */}
-                    <a
-                        href={pdfUrl}
-                        download={`${resume.basics.name.replace(/\s+/g, '_')}_Resume.pdf`}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm hover:shadow-md"
+                    {/* Download Button - Now uses API route for server-side generation */}
+                    <button
+                        onClick={handleDownload}
+                        disabled={isDownloading}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <Download size={16} />
-                        Download PDF
-                    </a>
+                        {isDownloading ? (
+                            <>
+                                <Loader2 size={16} className="animate-spin" />
+                                Downloading...
+                            </>
+                        ) : (
+                            <>
+                                <Download size={16} />
+                                Download PDF
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
 

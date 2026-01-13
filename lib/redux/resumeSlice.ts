@@ -169,6 +169,70 @@ const resumeSlice = createSlice({
             saveState(state);
         },
 
+        // Custom Sections
+        addCustomSection: (state, action: PayloadAction<{ id: string; title: string }>) => {
+            if (!state.resume.customSections) {
+                state.resume.customSections = [];
+            }
+            state.resume.customSections.push({
+                id: action.payload.id,
+                title: action.payload.title,
+                items: [],
+            });
+            state.lastModified = new Date().toISOString();
+            saveState(state);
+        },
+
+        updateCustomSectionTitle: (state, action: PayloadAction<{ id: string; title: string }>) => {
+            if (!state.resume.customSections) return;
+            const index = state.resume.customSections.findIndex(s => s.id === action.payload.id);
+            if (index !== -1) {
+                state.resume.customSections[index].title = action.payload.title;
+                state.lastModified = new Date().toISOString();
+                saveState(state);
+            }
+        },
+
+        deleteCustomSection: (state, action: PayloadAction<string>) => {
+            if (!state.resume.customSections) return;
+            state.resume.customSections = state.resume.customSections.filter(s => s.id !== action.payload);
+            state.lastModified = new Date().toISOString();
+            saveState(state);
+        },
+
+        addCustomSectionItem: (state, action: PayloadAction<{ sectionId: string; item: any }>) => {
+            if (!state.resume.customSections) return;
+            const section = state.resume.customSections.find(s => s.id === action.payload.sectionId);
+            if (section) {
+                section.items.push(action.payload.item);
+                state.lastModified = new Date().toISOString();
+                saveState(state);
+            }
+        },
+
+        updateCustomSectionItem: (state, action: PayloadAction<{ sectionId: string; itemId: string; data: any }>) => {
+            if (!state.resume.customSections) return;
+            const section = state.resume.customSections.find(s => s.id === action.payload.sectionId);
+            if (section) {
+                const itemIndex = section.items.findIndex(i => i.id === action.payload.itemId);
+                if (itemIndex !== -1) {
+                    section.items[itemIndex] = { ...section.items[itemIndex], ...action.payload.data };
+                    state.lastModified = new Date().toISOString();
+                    saveState(state);
+                }
+            }
+        },
+
+        deleteCustomSectionItem: (state, action: PayloadAction<{ sectionId: string; itemId: string }>) => {
+            if (!state.resume.customSections) return;
+            const section = state.resume.customSections.find(s => s.id === action.payload.sectionId);
+            if (section) {
+                section.items = section.items.filter(i => i.id !== action.payload.itemId);
+                state.lastModified = new Date().toISOString();
+                saveState(state);
+            }
+        },
+
         // Settings
         updateSettings: (state, action: PayloadAction<Partial<ResumeSettings>>) => {
             state.settings = { ...state.settings, ...action.payload };
@@ -215,6 +279,12 @@ export const {
     addCertification,
     updateCertification,
     deleteCertification,
+    addCustomSection,
+    updateCustomSectionTitle,
+    deleteCustomSection,
+    addCustomSectionItem,
+    updateCustomSectionItem,
+    deleteCustomSectionItem,
     updateSettings,
     resetResume,
     clearAllData,
