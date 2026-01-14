@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
     config.resolve.alias.canvas = false;
     return config;
   },
+  // Add empty turbopack config to silence the warning
+  turbopack: {},
   // Increase serverless function payload size for PDF generation
   experimental: {
     serverActions: {
