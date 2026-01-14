@@ -24,10 +24,14 @@ export async function POST(request: NextRequest) {
         // ResumePDF returns a Document, so we can pass it directly to pdf()
         const pdfElement = React.createElement(ResumePDF, { resume });
         const pdfDoc = pdf(pdfElement as any); // Type assertion needed for server-side rendering
-        const pdfBuffer = await pdfDoc.toBuffer();
+
+        // Convert to blob first, then to array buffer for NextResponse
+        const blob = await pdfDoc.toBlob();
+        const arrayBuffer = await blob.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
         // Return PDF as response
-        return new NextResponse(pdfBuffer, {
+        return new NextResponse(buffer, {
             status: 200,
             headers: {
                 'Content-Type': 'application/pdf',
