@@ -6,6 +6,7 @@ import React from 'react';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Use Node.js runtime for better compatibility
+// Force Vercel to pick up latest changes
 
 export async function POST(request: NextRequest) {
     try {
