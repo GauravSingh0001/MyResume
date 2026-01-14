@@ -19,8 +19,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Generate PDF buffer using React.createElement (no JSX in .ts files)
-        const pdfDoc = pdf(React.createElement(ResumePDF, { resume }));
+        // Generate PDF buffer
+        // ResumePDF returns a Document, so we can pass it directly to pdf()
+        const pdfElement = React.createElement(ResumePDF, { resume });
+        const pdfDoc = pdf(pdfElement as any); // Type assertion needed for server-side rendering
         const pdfBuffer = await pdfDoc.toBuffer();
 
         // Return PDF as response
