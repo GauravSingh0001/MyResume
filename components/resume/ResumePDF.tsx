@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 3,
+        marginBottom: 5,
         textTransform: 'uppercase', // Adds a bit more professional feel
     },
     contactInfo: {
