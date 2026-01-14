@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { renderToBuffer } from '@react-pdf/renderer';
+import { pdf } from '@react-pdf/renderer';
 import { ResumePDF } from '@/components/resume/ResumePDF';
 import { Resume } from '@/types/resume';
 import React from 'react';
@@ -19,10 +19,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Generate PDF buffer
-        const pdfBuffer = await renderToBuffer(
-            React.createElement(ResumePDF, { resume })
-        );
+        // Generate PDF buffer using React.createElement (no JSX in .ts files)
+        const pdfDoc = pdf(React.createElement(ResumePDF, { resume }));
+        const pdfBuffer = await pdfDoc.toBuffer();
 
         // Return PDF as response
         return new NextResponse(pdfBuffer, {
